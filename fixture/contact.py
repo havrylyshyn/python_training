@@ -60,3 +60,7 @@ class ContactHelper:
         wd.switch_to_alert().accept()
         wd.switch_to_window("")
         self.return_to_contacts_page()
+
+    def count(self):
+        wd = self.app.wd
+        return len(wd.find_elements_by_name("selected[]"))
