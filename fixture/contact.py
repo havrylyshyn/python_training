@@ -30,12 +30,16 @@ class ContactHelper:
         self.contact_cache = None
 
     def update_first_contact(self, contact):
+        self.update_contact_by_index(0)
+        self.contact_cache = None
+
+    def update_contact_by_index(self, contact, index):
         wd = self.app.wd
         self.open_contacts_page()
         # select contact
-        self.select_first_contact()
+        self.select_contact_by_index(index)
         # open edit page
-        wd.find_element_by_xpath("//img[@title='Edit']").click()
+        wd.find_elements_by_xpath("//img[@title='Edit']")[index].click()
         self.fill_contact_data(contact)
         # save contact
         wd.find_element_by_name("update").click()
@@ -61,13 +65,22 @@ class ContactHelper:
         wd = self.app.wd
         wd.find_element_by_name("selected[]").click()
 
+    def select_contact_by_index(self, index):
+        wd = self.app.wd
+        wd.find_elements_by_name("selected[]")[index].click()
+
     def delete_first_contact(self):
+        self.delete_contact_by_index(0)
+        self.contact_cache = None
+
+    def delete_contact_by_index(self, index):
         wd = self.app.wd
         self.open_contacts_page()
-        self.select_first_contact()
+        self.select_contact_by_index(index)
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         wd.switch_to_alert().accept()
         wd.switch_to_window("")
+        wd.find_element_by_xpath("//div[@class='msgbox']")
         self.return_to_contacts_page()
         self.contact_cache = None
 
