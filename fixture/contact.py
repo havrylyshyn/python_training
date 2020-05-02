@@ -48,10 +48,10 @@ class ContactHelper:
 
     def fill_contact_data(self, contact):
         wd = self.app.wd
-        self.change_field_value("firstname", contact.firstName)
-        self.change_field_value("lastname", contact.lastName)
+        self.change_field_value("firstname", contact.firstname)
+        self.change_field_value("lastname", contact.lastname)
         self.change_field_value("address", contact.address)
-        self.change_field_value("home", contact.phoneHome)
+        self.change_field_value("home", contact.homephone)
         self.change_field_value("email", contact.email)
 
     def change_field_value(self, field_name, text):
