@@ -46,6 +46,19 @@ class ContactHelper:
         self.return_to_contacts_page()
         self.contact_cache = None
 
+    def update_contact_by_id(self, contact, id):
+        wd = self.app.wd
+        self.open_contacts_page()
+        # select contact
+        self.select_contact_by_id(id)
+        # open edit page
+        wd.find_element_by_xpath("//input[@value='%s']/../..//img[@title='Edit']" % id).click()
+        self.fill_contact_data(contact)
+        # save contact
+        wd.find_element_by_name("update").click()
+        self.return_to_contacts_page()
+        self.contact_cache = None
+
     def fill_contact_data(self, contact):
         wd = self.app.wd
         self.change_field_value("firstname", contact.firstname)
@@ -74,6 +87,10 @@ class ContactHelper:
         wd = self.app.wd
         wd.find_elements_by_name("selected[]")[index].click()
 
+    def select_contact_by_id(self, id):
+        wd = self.app.wd
+        wd.find_element_by_xpath("//input[@value='%s']" % id).click()
+
     def delete_first_contact(self):
         self.delete_contact_by_index(0)
         self.contact_cache = None
@@ -82,6 +99,17 @@ class ContactHelper:
         wd = self.app.wd
         self.open_contacts_page()
         self.select_contact_by_index(index)
+        wd.find_element_by_xpath("//input[@value='Delete']").click()
+        wd.switch_to_alert().accept()
+        wd.switch_to_window("")
+        wd.find_element_by_xpath("//div[@class='msgbox']")
+        self.return_to_contacts_page()
+        self.contact_cache = None
+
+    def delete_contact_by_id(self, id):
+        wd = self.app.wd
+        self.open_contacts_page()
+        self.select_contact_by_id(id)
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         wd.switch_to_alert().accept()
         wd.switch_to_window("")

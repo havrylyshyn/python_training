@@ -1,16 +1,18 @@
 from model.group import Group
-from random import randrange
+import random
 
 
-def test_update_some_group(app):
-    if app.group.count() == 0:
+def test_update_some_group(app, db, check_ui):
+    if len(db.get_group_list()) == 0:
         app.group.create(Group(name="groupForUpdate", header="header", footer="footer"))
-    old_groups = app.group.get_group_list()
+    old_groups = db.get_group_list()
     group = Group(name="updatedName")
-    index = randrange(len(old_groups))
-    group.id = old_groups[index].id
-    app.group.update_group_by_index(group, index)
-    assert len(old_groups) == app.group.count()
-    new_groups = app.group.get_group_list()
-    old_groups[index] = group
+    group_to_update = random.choice(old_groups)
+    app.group.update_group_by_id(group, group_to_update.id)
+    new_groups = db.get_group_list()
+    old_groups.remove(group_to_update)
+    group.id = group_to_update.id
+    old_groups.append(group)
     assert sorted(old_groups, key=Group.id_or_max) == sorted(new_groups, key=Group.id_or_max)
+    if check_ui:
+        assert sorted(new_groups, key=Group.id_or_max) == sorted(app.group.get_group_list(), key=Group.id_or_max)
