@@ -1,4 +1,5 @@
 from model.contact import Contact
+from selenium.webdriver.support.ui import Select
 
 
 class ContactHelper:
@@ -170,3 +171,34 @@ class ContactHelper:
         return Contact(id=id, firstname=firstname, lastname=lastname, address=address, homephone=homephone,
                        mobilephone=mobilephone, workphone=workphone, secondaryphone=secondaryphone, email=email,
                        email2=email2, email3=email3)
+
+    def add_contact_to_group(self, contact_id, group_id):
+        wd = self.app.wd
+        self.open_contacts_page()
+        # select contact
+        self.select_contact_by_id(contact_id)
+        # open groups dropdown and select group
+        to_group_dropdown = wd.find_element_by_name("to_group")
+        self.select_by_value(to_group_dropdown, group_id)
+        # add contact to group
+        wd.find_element_by_name("add").click()
+        self.return_to_contacts_page()
+        self.contact_cache = None
+
+    def remove_contact_from_group(self, contact_id, group_id):
+        wd = self.app.wd
+        self.open_contacts_page()
+        # select contacts in group
+        groups_dropdown = wd.find_element_by_xpath("//select[@name='group']")
+        self.select_by_value(groups_dropdown, group_id)
+        # select contact
+        self.select_contact_by_id(contact_id)
+        # submit removement
+        wd.find_element_by_name("remove").click()
+        self.return_to_contacts_page()
+        self.contact_cache = None
+
+    def select_by_value(self, dropdown, value):
+        wd = self.app.wd
+        dropdown = Select(dropdown)
+        dropdown.select_by_value(value)
