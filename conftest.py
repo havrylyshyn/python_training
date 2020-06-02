@@ -6,12 +6,13 @@ import importlib
 import jsonpickle
 from fixture.application import Application
 from fixture.db import DBFixture
+from fixture.orm import ORMFixture
 
 fixture = None
 target = None
 
 
-def loan_config(file):
+def load_config(file):
     global target
     if target is None:
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), file)
@@ -23,7 +24,7 @@ def loan_config(file):
 @pytest.fixture
 def app(request):
     global fixture
-    web_config = loan_config(request.config.getoption("--target"))['web']
+    web_config = load_config(request.config.getoption("--target"))['web']
     browser = request.config.getoption("--browser")
     if fixture is None or not fixture.is_valid():
         fixture = Application(browser=browser, base_url=web_config['baseUrl'])
@@ -33,12 +34,22 @@ def app(request):
 
 @pytest.fixture(scope="session")
 def db(request):
-    db_config = loan_config(request.config.getoption("--target"))['db']
+    db_config = load_config(request.config.getoption("--target"))['db']
     dbfixture = DBFixture(host=db_config['host'], name=db_config['name'], user=db_config['user'], password=db_config['password'])
     def fin():
         dbfixture.destroy()
     request.addfinalizer(fin)
     return dbfixture
+
+
+@pytest.fixture(scope="session")
+def orm(request):
+    orm_config = load_config(request.config.getoption("--target"))['db']
+    ormfixture = ORMFixture(host=orm_config['host'], name=orm_config['name'], user=orm_config['user'], password=orm_config['password'])
+    def fin():
+        pass
+    request.addfinalizer(fin)
+    return ormfixture
 
 
 @pytest.fixture(scope="session", autouse=True)
