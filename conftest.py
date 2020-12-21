@@ -68,7 +68,7 @@ def check_ui(request):
 
 @pytest.fixture(autouse=True)
 def sleep():
-    time.sleep(1)
+    time.sleep(2)
     yield
 
 
